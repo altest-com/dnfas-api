@@ -1,0 +1,27 @@
+language: python
+services:
+  - postgresql
+cache:
+  pip: true
+  directories:
+    - $HOME/.cache/pip
+    - storage/data/models/
+python:
+  - "3.7"
+install:
+  - pip install -r requirements_dev.txt
+  - bash getmodels.sh
+env:
+  global:
+    - DJANGO_SETTINGS_MODULE=dnfas.settings.testing
+    - DNFAL_FORCE_CPU=True
+    - DNFAS_DB_NAME=dnfas_test
+    - DNFAS_DB_USER=dnfas_test
+    - DNFAS_DB_HOST=localhost
+    - DNFAS_DB_PASSWORD=dnfas_test
+before_script:
+  - bash dbinit.sh --pguser=postgres --dbname=dnfas_test --dbuser=dnfas_test --dbpass=dnfas_test
+script:
+  - coverage run --rcfile=.coveragerc manage.py test --keepdb -v 2
+after_success:
+  - codecov

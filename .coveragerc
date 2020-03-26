@@ -1,0 +1,11 @@
+[run]
+branch = True
+include =
+    dfapi/*
+    sysinf/*
+    users/*
+[report]
+ignore_errors = True
+omit =
+    */tests/*
+    */migrations/*

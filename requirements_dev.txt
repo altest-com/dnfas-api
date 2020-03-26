@@ -1,0 +1,4 @@
+-r requirements.txt
+codecov>=2.0.15
+Faker>=2.0.4
+
