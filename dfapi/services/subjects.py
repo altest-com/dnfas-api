@@ -1,10 +1,12 @@
 from os import path
 from typing import List
 from typing import Tuple
+import datetime
 
 import numpy as np
 from django.db.models import QuerySet
 from django.http import QueryDict, HttpRequest
+from django.utils import timezone
 from openpyxl import Workbook
 from openpyxl.cell import Cell
 
@@ -104,7 +106,7 @@ def build_queryset(
         except ValueError:
             pass
         else:
-            queryset = queryset.filter(pred_age__gt=min_pred_age)
+            queryset = queryset.filter(pred_age__gte=min_pred_age)
             filtered = True
 
     max_pred_age = params.get('max_pred_age', None)
@@ -114,7 +116,7 @@ def build_queryset(
         except ValueError:
             pass
         else:
-            queryset = queryset.filter(pred_age__lt=max_pred_age)
+            queryset = queryset.filter(pred_age__lte=max_pred_age)
             filtered = True
 
     sex = params.get('sex', None)
@@ -210,14 +212,95 @@ def demograp(subjects_queryset: QuerySet):
 
     return {
         'age_labels': labels,
-        'men_ages': age_stats(men_ages, labels),
-        'women_ages': age_stats(women_ages, labels),
+        'men_ages': _age_stats(men_ages, labels),
+        'women_ages': _age_stats(women_ages, labels),
         'men_count': men_count,
-        'women_count': women_count
+        'women_count': women_count,
+        'hourly_count': _hourly_count(subjects_queryset),
+        'daily_count': _daily_count(subjects_queryset),
     }
 
 
-def age_stats(ages, labels):
+def _hourly_count(subjects_queryset: QuerySet):
+    hours = [str(datetime.time(hour=hour)) for hour in range(0, 24)]
+
+    men_count = []
+    women_count = []
+
+    for ind in range(len(hours) - 1):
+        hour_lower = hours[ind]
+        hour_upper = hours[ind + 1]
+        subjects = subjects_queryset.filter(
+            faces__created_at__time__gte=hour_lower,
+            faces__created_at__time__lt=hour_upper
+        )
+        men_count.append(len(set([
+            subject.id for subject in subjects
+            if subject.pred_sex == Subject.SEX_MAN
+        ])))
+        women_count.append(len(set([
+            subject.id for subject in subjects
+            if subject.pred_sex == Subject.SEX_WOMAN
+        ])))
+
+    return {
+        'hours': hours,
+        'men_count': men_count,
+        'women_count': women_count,
+    }
+
+
+def _daily_count(subjects_queryset: QuerySet):
+
+    subjects_queryset = subjects_queryset.order_by('faces__created_at')
+    oldest_subject = subjects_queryset.first()
+    newest_subject = subjects_queryset.last()
+
+    lower_timestamp = min([
+        face.created_at for face in oldest_subject.faces.all()
+    ])
+    upper_timestamp = max([
+        face.created_at for face in newest_subject.faces.all()
+    ])
+
+    lower_date = timezone.localtime(lower_timestamp).date()
+    upper_date = timezone.localtime(upper_timestamp).date()
+
+    men_count = []
+    women_count = []
+
+    dates = []
+    curr_date = lower_date
+    ind = 0
+
+    while curr_date <= upper_date:
+        next_date = curr_date + datetime.timedelta(days=1)
+
+        subjects = subjects_queryset.filter(
+            faces__created_at__date__gte=curr_date,
+            faces__created_at__date__lt=next_date
+        )
+        men_count.append(len(set([
+            subject.id for subject in subjects
+            if subject.pred_sex == Subject.SEX_MAN
+        ])))
+        women_count.append(len(set([
+            subject.id for subject in subjects
+            if subject.pred_sex == Subject.SEX_WOMAN
+        ])))
+
+        dates.append(str(curr_date))
+        curr_date = next_date
+        ind += 1
+
+    return {
+        'dates': dates,
+        'men_count': men_count,
+        'women_count': women_count,
+    }
+
+
+def _age_stats(ages, labels):
     if not len(ages):
         return {
             'counts': [0] * len(labels),
@@ -244,7 +327,7 @@ def age_stats(ages, labels):
     }
 
 
-def fill_cell(subject: Subject, cell: Cell, col_key: str, request: HttpRequest):
+def _fill_xls_cell(subject: Subject, cell: Cell, col_key: str, request: HttpRequest):
     if col_key == 'id':
         cell.value = subject.pk
     elif col_key == 'image':
@@ -302,6 +385,6 @@ def xls_export(
         # Assign the data for each cell of the row
         for col_num, col_key in enumerate(fields, 1):
             cell = worksheet.cell(row=row_num, column=col_num)
-            fill_cell(subject, cell, col_key, request)
+            _fill_xls_cell(subject, cell, col_key, request)
 
     return workbook
