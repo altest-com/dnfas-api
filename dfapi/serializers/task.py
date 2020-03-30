@@ -8,6 +8,7 @@ from ..models import (
     Task,
     Tag,
     VTaskConfig,
+    PgaTaskConfig,
     FclTaskConfig
 )
 
@@ -74,6 +75,10 @@ class PgaTaskConfigSerializer(serializers.Serializer):
 
     min_created_at = serializers.DateTimeField(required=False, allow_null=True)
     max_created_at = serializers.DateTimeField(required=False, allow_null=True)
+    method = serializers.ChoiceField(
+        required=False,
+        choices=PgaTaskConfig.METHOD_CHOICES
+    )
     overwrite = serializers.BooleanField(required=False)
 
 

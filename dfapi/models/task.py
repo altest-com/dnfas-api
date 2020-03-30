@@ -126,9 +126,18 @@ class VhfTaskConfig(VdfTaskConfig):
 
 class PgaTaskConfig:
 
+    METHOD_DNFAl = 'dnfal'
+    METHOD_AWS = 'aws'
+
+    METHOD_CHOICES = [
+        (METHOD_DNFAl, 'dnfal'),
+        (METHOD_AWS, 'aws')
+    ]
+
     def __init__(self, *args, **kwargs):
         self.min_created_at: float = kwargs.get('min_created_at', None)
         self.max_created_at: float = kwargs.get('min_created_at', None)
+        self.method: float = kwargs.get('method', self.METHOD_AWS)
         self.overwrite: bool = kwargs.get('overwrite', False)
 
 

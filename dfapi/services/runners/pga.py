@@ -5,6 +5,7 @@ import cv2 as cv
 from django.conf import settings
 from dnfal.settings import Settings
 from dnfal.vision import FacesVision
+from dnfal.amazon.faces import analyze_faces, AwsFace
 
 from .task import TaskRunner, PAUSE_DURATION, PROGRESS_UPDATE_INTERVAL
 from ..subjects import pred_sexage
@@ -33,14 +34,17 @@ class PgaTaskRunner(TaskRunner):
 
         self.task_config: PgaTaskConfig = PgaTaskConfig(**task.config)
 
-        self.faces_vision: FacesVision = FacesVision(se)
+        if self.task_config.method == PgaTaskConfig.METHOD_DNFAl:
+            self.faces_vision: FacesVision = FacesVision(se)
 
         self._run: bool = False
         self._pause: bool = False
 
     def main_run(self):
 
-        if self.task_config.overwrite:
+        config = self.task_config
+
+        if config.overwrite:
             faces_queryset = Face.objects.all()
         else:
             faces_queryset = (
@@ -50,17 +54,17 @@ class PgaTaskRunner(TaskRunner):
 
         faces_queryset = faces_queryset.exclude(image__isnull=True)
 
-        if self.task_config.min_created_at is not None:
+        if config.min_created_at is not None:
             faces_queryset = faces_queryset.filter(
-                created_at__gt=self.task_config.min_created_at
+                created_at__gt=config.min_created_at
             )
 
-        if self.task_config.max_created_at is not None:
+        if config.max_created_at is not None:
             faces_queryset = faces_queryset.filter(
-                created_at__lt=self.task_config.max_created_at
+                created_at__lt=config.max_created_at
             )
 
-        batch_size = 64
+        batch_size = 36
         faces_count = 0
         started_at = time()
         total = faces_queryset.count()
@@ -80,7 +84,12 @@ class PgaTaskRunner(TaskRunner):
             last_face = faces_count == total
 
             if len(faces_batch) == batch_size or last_face:
-                self.predict_genderage(faces_batch)
+
+                if config.method == PgaTaskConfig.METHOD_DNFAl:
+                    self.dnfal_face_analysis(faces_batch)
+                elif config.method == PgaTaskConfig.METHOD_AWS:
+                    self.aws_face_analysis(faces_batch)
+
                 faces_batch = []
                 now = time()
                 elapsed = now - self.last_progress_update
@@ -127,7 +136,7 @@ class PgaTaskRunner(TaskRunner):
                     'pred_age_var'
                 ])
 
-    def predict_genderage(self, faces: List[Face]):
+    def dnfal_face_analysis(self, faces: List[Face]):
         genderage_predictor = self.faces_vision.genderage_predictor
         face_aligner = self.faces_vision.face_aligner
 
@@ -177,6 +186,45 @@ class PgaTaskRunner(TaskRunner):
                     'pred_age',
                     'pred_age_var'
                 ])
+
+    @staticmethod
+    def aws_face_analysis(faces: List[Face]):
+
+        faces_images = []
+        faces_inds = []
+        for ind, face in enumerate(faces):
+            face_image = face.image
+            if face_image is not None:
+                face_image = cv.imread(face_image.path)
+                faces_images.append(face_image)
+                faces_inds.append(ind)
+
+        n_images = len(faces_images)
+        if n_images:
+            aws_faces = analyze_faces(faces_images)
+
+            for ind in range(n_images):
+                aws_face = aws_faces[ind]
+                if aws_face is not None:
+                    face = faces[faces_inds[ind]]
+                    if aws_face.gender == AwsFace.GENDER_WOMAN:
+                        face.pred_sex = Face.SEX_WOMAN
+                    elif aws_face.gender == AwsFace.GENDER_MAN:
+                        face.pred_sex = Face.SEX_MAN
+
+                    face.pred_sex_score = aws_face.gender_score
+
+                    age_mean = 0.5 * (aws_face.age_high + aws_face.age_low)
+                    age_var = 0.5 * (aws_face.age_high - aws_face.age_low)
+                    face.pred_age = int(age_mean)
+                    face.pred_age_var = int(age_var)
+
+                    face.save(update_fields=[
+                        'pred_sex',
+                        'pred_sex_score',
+                        'pred_age',
+                        'pred_age_var'
+                    ])
 
     def pause(self):
         self._pause = True
