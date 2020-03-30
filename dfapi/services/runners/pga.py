@@ -189,7 +189,9 @@ class PgaTaskRunner(TaskRunner):
 
     @staticmethod
     def aws_face_analysis(faces: List[Face]):
-
+        # faces_id = [face.pk for face in faces] # TODO: delete this
+        # if 5985 not in faces_id:
+        #     return
         faces_images = []
         faces_inds = []
         for ind, face in enumerate(faces):

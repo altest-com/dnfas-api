@@ -53,14 +53,24 @@ def build_queryset(
         queryset = queryset.filter(faces__task__tags__in=tasks_tags)
         filtered = True
 
-    min_timestamp = params.get('min_timestamp', None)
-    if min_timestamp is not None:
-        queryset = queryset.filter(created_at__gt=min_timestamp)
+    min_time = params.get('min_time', None)
+    if min_time is not None:
+        queryset = queryset.filter(faces__created_at__time__gte=min_time)
         filtered = True
 
-    max_timestamp = params.get('max_timestamp', None)
-    if max_timestamp is not None:
-        queryset = queryset.filter(created_at__lt=max_timestamp)
+    max_time = params.get('max_time', None)
+    if max_time is not None:
+        queryset = queryset.filter(faces__created_at__time__lte=max_time)
+        filtered = True
+
+    min_date = params.get('min_date', None)
+    if min_date is not None:
+        queryset = queryset.filter(faces__created_at__date__gte=min_date)
+        filtered = True
+
+    max_date = params.get('max_date', None)
+    if max_date is not None:
+        queryset = queryset.filter(faces__created_at__date__lte=max_date)
         filtered = True
 
     max_age = params.get('max_age', None)
