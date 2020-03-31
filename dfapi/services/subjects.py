@@ -222,26 +222,27 @@ def demograp(subjects_queryset: QuerySet):
 
 
 def _hourly_count(subjects_queryset: QuerySet):
-    hours = [str(datetime.time(hour=hour)) for hour in range(0, 24)]
 
+    hours = [str(datetime.time(hour=hour)) for hour in range(0, 24)]
     men_count = []
     women_count = []
 
-    for ind in range(len(hours) - 1):
-        hour_lower = hours[ind]
-        hour_upper = hours[ind + 1]
-        subjects = subjects_queryset.filter(
-            faces__created_at__time__gte=hour_lower,
-            faces__created_at__time__lt=hour_upper
-        )
-        men_count.append(len(set([
-            subject.id for subject in subjects
-            if subject.pred_sex == Subject.SEX_MAN
-        ])))
-        women_count.append(len(set([
-            subject.id for subject in subjects
-            if subject.pred_sex == Subject.SEX_WOMAN
-        ])))
+    if subjects_queryset.count():
+        for ind in range(len(hours) - 1):
+            hour_lower = hours[ind]
+            hour_upper = hours[ind + 1]
+            subjects = subjects_queryset.filter(
+                faces__created_at__time__gte=hour_lower,
+                faces__created_at__time__lt=hour_upper
+            )
+            men_count.append(len(set([
+                subject.id for subject in subjects
+                if subject.pred_sex == Subject.SEX_MAN
+            ])))
+            women_count.append(len(set([
+                subject.id for subject in subjects
+                if subject.pred_sex == Subject.SEX_WOMAN
+            ])))
 
     return {
         'hours': hours,
@@ -252,46 +253,48 @@ def _hourly_count(subjects_queryset: QuerySet):
 
 def _daily_count(subjects_queryset: QuerySet):
 
-    subjects_queryset = subjects_queryset.order_by('faces__created_at')
-    oldest_subject = subjects_queryset.first()
-    newest_subject = subjects_queryset.last()
 
-    lower_timestamp = min([
-        face.created_at for face in oldest_subject.faces.all()
-    ])
-    upper_timestamp = max([
-        face.created_at for face in newest_subject.faces.all()
-    ])
-
-    lower_date = timezone.localtime(lower_timestamp).date()
-    upper_date = timezone.localtime(upper_timestamp).date()
-
+    dates = []
     men_count = []
     women_count = []
 
-    dates = []
-    curr_date = lower_date
-    ind = 0
+    if subjects_queryset.count():
+        subjects_queryset = subjects_queryset.order_by('faces__created_at')
+        oldest_subject = subjects_queryset.first()
+        newest_subject = subjects_queryset.last()
 
-    while curr_date <= upper_date:
-        next_date = curr_date + datetime.timedelta(days=1)
+        lower_timestamp = min([
+            face.created_at for face in oldest_subject.faces.all()
+        ])
+        upper_timestamp = max([
+            face.created_at for face in newest_subject.faces.all()
+        ])
 
-        subjects = subjects_queryset.filter(
-            faces__created_at__date__gte=curr_date,
-            faces__created_at__date__lt=next_date
-        )
-        men_count.append(len(set([
-            subject.id for subject in subjects
-            if subject.pred_sex == Subject.SEX_MAN
-        ])))
-        women_count.append(len(set([
-            subject.id for subject in subjects
-            if subject.pred_sex == Subject.SEX_WOMAN
-        ])))
+        lower_date = timezone.localtime(lower_timestamp).date()
+        upper_date = timezone.localtime(upper_timestamp).date()
 
-        dates.append(str(curr_date))
-        curr_date = next_date
-        ind += 1
+        curr_date = lower_date
+        ind = 0
+
+        while curr_date <= upper_date:
+            next_date = curr_date + datetime.timedelta(days=1)
+
+            subjects = subjects_queryset.filter(
+                faces__created_at__date__gte=curr_date,
+                faces__created_at__date__lt=next_date
+            )
+            men_count.append(len(set([
+                subject.id for subject in subjects
+                if subject.pred_sex == Subject.SEX_MAN
+            ])))
+            women_count.append(len(set([
+                subject.id for subject in subjects
+                if subject.pred_sex == Subject.SEX_WOMAN
+            ])))
+
+            dates.append(str(curr_date))
+            curr_date = next_date
+            ind += 1
 
     return {
         'dates': dates,

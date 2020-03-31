@@ -5,7 +5,7 @@ from time import time
 import numpy as np
 from django.utils.timezone import make_aware
 from dnfal.engine import similarity_to_distance
-from dnfal.clustering import hcg_cluster
+from dnfal.clustering import hcg_cluster, gcg_cluster
 
 from .task import TaskRunner
 from ...models import (
@@ -91,10 +91,8 @@ class FclTaskRunner(TaskRunner):
 
         faces_queryset = faces_queryset.order_by('created_at')
 
-        top_dist_thr = similarity_to_distance(self.task_config.top_dist_thr)
-        low_dist_thr = similarity_to_distance(self.task_config.low_dist_thr)
+        distance_thr = similarity_to_distance(self.task_config.distance_thr)
         edge_thr = self.task_config.edge_thr
-        linkage = self.task_config.linkage
         timestamp_thr = self.task_config.memory_seconds
 
         embeddings = []
@@ -116,13 +114,12 @@ class FclTaskRunner(TaskRunner):
             else:
                 timestamps = np.array(timestamps).reshape((-1, 1))
 
-        clusters = hcg_cluster(
+        clusters = gcg_cluster(
             features=embeddings,
             timestamps=timestamps,
-            distance_thr=(top_dist_thr, low_dist_thr),
+            distance_thr=distance_thr,
             timestamp_thr=timestamp_thr,
-            edge_thr=edge_thr,
-            linkage=linkage
+            edge_thr=edge_thr
         )
 
         queryset_pks = set(queryset_pks)
