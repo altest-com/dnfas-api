@@ -11,9 +11,9 @@
       - postgresql-contrib
       - python-psycopg2
 
-- name: Run initdb command
-  raw: postgresql-setup initdb
-  become: yes
+#- name: Run initdb command
+#  raw: postgresql-setup initdb
+#  become: yes
 
 - name: Start and enable postgres
   service: name=postgresql enabled=yes state=started
