@@ -1,0 +1,25 @@
+##
+# Configure nginx web server
+##
+- name: Set up nginx config
+  dnf: name=nginx state=latest
+  become: yes
+
+- name: Write nginx conf file
+  template:
+    src: nginx
+    dest: /etc/nginx/sites-available/{{ app_name }}
+  become: yes
+
+- name: Enable site
+  file:
+    src: /etc/nginx/sites-available/{{ app_name }}
+    dest: /etc/nginx/sites-enabled/{{ app_name }}
+    state: link
+
+- name: Start and enable nginx
+  service:
+    name: nginx.service
+    enabled: yes
+    state: started
+  become: yes

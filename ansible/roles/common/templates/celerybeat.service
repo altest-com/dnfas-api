@@ -1,0 +1,18 @@
+# /etc/systemd/system/celerybeat.service
+
+[Unit]
+Description=Celery Beat Service
+After=network.target
+
+[Service]
+Type=simple
+User={{ deployer_user }}
+Group={{ deployer_group }}
+EnvironmentFile={{ app_api_env }}
+WorkingDirectory={{ app_api_dir }}
+ExecStart=/bin/sh -c '{{ celery_bin }} beat  \
+  -A {{ app_name }} --pidfile={{ celerybeat_pid_file }} \
+  --logfile={{ celerybeat_log_file }} --loglevel={{ celerybeat_log_level }}'
+
+[Install]
+WantedBy=multi-user.target

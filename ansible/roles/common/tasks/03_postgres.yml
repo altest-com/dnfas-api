@@ -1,0 +1,37 @@
+##
+# Set up and configure postgres
+##
+- name: Install and configure db
+  apt: name={{item}} state=latest
+  become: yes
+  with_items:
+    - libpq-dev
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2
+
+- name: Run initdb command
+  raw: postgresql-setup initdb
+  become: yes
+
+- name: Start and enable postgres
+  service: name=postgresql enabled=yes state=started
+  become: yes
+
+- name: Create database
+  postgresql_db:
+    name: '{{ db_name }}'
+  become_user: postgres
+  become: yes
+
+- name: Configure a new postgresql user
+  postgresql_user:
+    db: '{{ db_name }}'
+    name: '{{ db_user }}'
+    password: '{{ db_password }}'
+    priv: ALL
+    role_attr_flags: NOSUPERUSER
+  become: yes
+  become_user: postgres
+  notify:
+    - restart postgres

@@ -1,4 +1,5 @@
 syntax: glob
+ansible/group_vars/all.yml
 .idea/
 .git/
 logs/

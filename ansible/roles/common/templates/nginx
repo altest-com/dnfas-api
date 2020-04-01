@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name {{ server_ip }};
+
+    location = /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    location /media {
+        alias {{ app_api_dir }}/storage/media/;
+    }
+
+    location /static {
+        alias {{ app_api_dir }}/storage/static/;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+
+    error_log  /var/log/nginx/{{ app_name }}-error.log;
+    access_log /var/log/nginx/{{ app_name }}-access.log;
+}

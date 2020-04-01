@@ -1,0 +1,31 @@
+##
+# Set up celery
+##
+- name: Create run directory
+  file:
+    path: /var/run/celery
+    state: directory
+    owner: '{{ deployer_user }}'
+    group: '{{ deployer_group }}'
+  become: yes
+
+- name: Create log directory
+  file:
+    path: /var/log/celery
+    state: directory
+    owner: '{{ deployer_user }}'
+    group: '{{ deployer_group }}'
+  become: yes
+
+- name: Create the celery beat service
+  template:
+    src: celerybeat.service
+    dest: /etc/systemd/system/celerybeat.service
+  become: yes
+
+- name: Start and enable celerybeat
+  service:
+    name: celerybeat.service
+    enabled: yes
+    state: started
+  become: yes

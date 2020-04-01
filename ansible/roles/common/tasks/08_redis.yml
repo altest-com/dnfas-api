@@ -1,0 +1,26 @@
+##
+# Set up Redis
+##
+- name: Set up redis
+  apt: name=redis-server state=latest
+  become: yes
+
+- name: Set default config
+  copy:
+    remote_src: yes
+    src: /etc/redis/redis.conf
+    dest: /etc/redis/default.conf
+  become: yes
+
+- name: Set config
+  template:
+    src: redis.conf
+    dest: /etc/redis/redis.conf
+  become: yes
+
+- name: Start and enable redis service
+  service:
+    name: redis.socket
+    enabled: yes
+    state: started
+  become: yes

@@ -1,0 +1,12 @@
+##
+# Clone and pull the repo
+##
+- name: Set up git configuration
+  apt: name=git state=latest
+  become: yes
+
+- name: Clone or pull the latest dnfas-api code
+  git: repo={{ api_repo_url }} dest={{ app_api_dir }}
+
+- name: Clone or pull the latest dnfas-spa code
+  git: repo={{ spa_repo_url }} dest={{ app_spa_dir }}

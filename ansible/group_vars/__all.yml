@@ -1,0 +1,41 @@
+# App Name
+app_name: dnfas
+
+# Deployer User and Groups
+deployer_user: ronin
+deployer_group: ronin
+
+# SSH Keys Directory
+ssh_dir: <path-to-your-ssh-keys>
+
+# Github Code's Repo URL
+api_repo_url: https://github.com/altest-com/dnfas-api
+spa_repo_url: https://github.com/altest-com/dnfas-spa
+
+# App Directory
+app_api_dir: '/home/{{ deployer_user }}/{{app_name}}/api'
+app_spa_dir: '/home/{{ deployer_user }}/{{app_name}}/spa'
+app_api_env: '{{ app_api_dir }}/.env.prod'
+
+# DB Configuration
+db_name: '{{ app_name }}'
+db_user: '{{ deployer_user }}'
+db_host: localhost
+db_password: <your-db-password>
+
+# Application Dependencies Setup
+venv_dir: '/home/{{ deployer_user }}/envs/{{ app_name }}'
+venv_python: '{{ venv_dir }}/bin/python3.7'
+gunicorn_bin: '{{ venv_dir }}/bin/gunicorn'
+
+# Server
+server_ip: <your-server-ip>
+worker_name: master
+secret_key: <your-secret-key>
+
+# Celery variables
+celery_bin: '{{ venv_dir }}/bin/celery'
+celery_log_level: INFO
+celerybeat_pid_file: /var/run/celery/beat.pid
+celerybeat_log_file: /var/log/celery/beat.log
+

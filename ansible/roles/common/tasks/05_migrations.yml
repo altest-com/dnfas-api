@@ -1,0 +1,26 @@
+##
+# Run db migrations and get all static files
+##
+- name: Make migrations
+  django_manage:
+    app_path: '{{ app_api_dir }}'
+    command: makemigrations
+    virtualenv: '{{ venv_dir }}'
+
+- name: Migrate database
+  django_manage:
+    app_path: '{{ app_api_dir }}'
+    command: makemigrations
+    virtualenv: '{{ venv_dir }}'
+
+- name: Build static files
+  shell:
+    cmd: npm run build:prod
+    chdir: '{{ app_spa_dir }}'
+
+- name: Get all static files
+  django_manage:
+    app_path: '{{ app_api_dir }}'
+    command: collectstatic
+    virtualenv: '{{ venv_dir }}'
+  # become: yes

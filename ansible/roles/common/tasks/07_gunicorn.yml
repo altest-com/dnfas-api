@@ -1,0 +1,35 @@
+##
+# Set up Gunicorn
+##
+- name: Install dependencies
+  pip:
+    name: gunicorn
+    state: latest
+    virtualenv: '{{ venv_dir }}'
+    virtualenv_command: -m venv
+
+- name: Create the gunicorn socket
+  template:
+    src: gunicorn.socket
+    dest: /etc/systemd/system/gunicorn.socket
+  become: yes
+
+- name: Start and enable socket
+  service:
+    name: gunicorn.socket
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Create the gunicorn service
+  template:
+    src: gunicorn.service
+    dest: /etc/systemd/system/gunicorn.service
+  become: yes
+
+- name: Start and enable gunicorn
+  service:
+    name: gunicorn.service
+    enabled: yes
+    state: started
+  become: yes
