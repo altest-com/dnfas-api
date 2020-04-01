@@ -22,6 +22,6 @@
 - name: Create the enviroment file for django
   template:
     src: .env.prod
-    dest: '{{ app_api_env}}'
+    dest: '{{ env_file }}'
   become: yes
 

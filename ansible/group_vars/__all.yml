@@ -16,7 +16,7 @@ spa_repo_url: https://github.com/altest-com/dnfas-spa
 app_dir: '/home/{{ deployer_user }}/{{app_name}}'
 app_api_dir: '{{app_dir}}/dnfas-api'
 app_spa_dir: '{{app_dir}}/dnfas-spa'
-app_api_env: '{{ app_api_dir }}/.env.prod'
+env_file: '{{ app_dir }}/.env.prod'
 
 # DB Configuration
 db_name: '{{ app_name }}'

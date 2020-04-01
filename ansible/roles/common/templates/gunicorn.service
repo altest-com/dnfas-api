@@ -7,7 +7,7 @@ After=network.target
 User={{ deployer_user }}
 Group=www-data
 WorkingDirectory={{ app_api_dir }}
-EnvironmentFile={{ app_api_env }}
+EnvironmentFile={{ env_file }}
 ExecStart={{ gunicorn_bin }} \
           --access-logfile - \
           --workers 1 \
