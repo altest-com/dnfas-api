@@ -13,8 +13,9 @@ api_repo_url: https://github.com/altest-com/dnfas-api
 spa_repo_url: https://github.com/altest-com/dnfas-spa
 
 # App Directory
-app_api_dir: '/home/{{ deployer_user }}/{{app_name}}/api'
-app_spa_dir: '/home/{{ deployer_user }}/{{app_name}}/spa'
+app_dir: '/home/{{ deployer_user }}/{{app_name}}'
+app_api_dir: '{{app_dir}}/dnfas-api'
+app_spa_dir: '{{app_dir}}/dnfas-spa'
 app_api_env: '{{ app_api_dir }}/.env.prod'
 
 # DB Configuration
@@ -24,9 +25,11 @@ db_host: localhost
 db_password: <your-db-password>
 
 # Application Dependencies Setup
-venv_dir: '/home/{{ deployer_user }}/envs/{{ app_name }}'
+venv_root: '/home/{{ deployer_user }}/envs'
+venv_dir: '{{ venv_root }}/{{ app_name }}'
 venv_python: '{{ venv_dir }}/bin/python3.7'
 gunicorn_bin: '{{ venv_dir }}/bin/gunicorn'
+
 
 # Server
 server_ip: <your-server-ip>
