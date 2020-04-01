@@ -47,7 +47,13 @@ We recommend to run Dnfas within a newly created virtual environment for easier 
 
     python3 -m venv pyenv
     source pyenv/bin/activate
+    
+Next, install python dependencies:
 
+.. code-block:: bash
+
+    pip install wheel ansible
+    
 Next, change to a directory where you wish to install Dnfas and clone the repository:
 
 .. code-block:: bash

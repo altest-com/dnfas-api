@@ -2,13 +2,22 @@
 # Update the DNF package cache and install packages as a root user
 ##
 - name: Install required packages
-  become: yes
   apt:
     state: latest
     name:
     - python3-venv
     - python3-dev
+  become: yes
 
+- name: Create app directory
+  file:
+    path: '{{ app_dir }}'
+    state: directory
+
+- name: Create venv directory
+  file:
+    path: '{{ venv_root }}'
+    state: directory
 
 - name: Create the enviroment file for django
   template:
