@@ -2,13 +2,14 @@
 # Set up and configure postgres
 ##
 - name: Install and configure db
-  apt: name={{item}} state=latest
   become: yes
-  with_items:
-    - libpq-dev
-    - postgresql
-    - postgresql-contrib
-    - python-psycopg2
+  apt:
+    state: latest
+    name:
+      - libpq-dev
+      - postgresql
+      - postgresql-contrib
+      - python-psycopg2
 
 - name: Run initdb command
   raw: postgresql-setup initdb

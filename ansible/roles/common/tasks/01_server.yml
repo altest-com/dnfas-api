@@ -2,11 +2,13 @@
 # Update the DNF package cache and install packages as a root user
 ##
 - name: Install required packages
-  apt: name={{item}} state=latest
   become: yes
-  with_items:
+  apt:
+    state: latest
+    name:
     - python3-venv
     - python3-dev
+
 
 - name: Create the enviroment file for django
   template:

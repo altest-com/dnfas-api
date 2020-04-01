@@ -36,7 +36,7 @@ Before you are ready to run Dnfas, you will need to install the additional softw
 .. code-block:: bash
 
     sudo apt update
-    sudo apt install python3-venv python3-dev libpq-dev postgresql postgresql-contrib
+    sudo apt install git python3-venv python3-dev pyhton3-apt
 
 Python virtual environment
 --------------------------
