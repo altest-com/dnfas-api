@@ -1,12 +1,6 @@
 ##
 # Set up Gunicorn
 ##
-- name: Install dependencies
-  pip:
-    name: gunicorn
-    state: latest
-    virtualenv: '{{ venv_dir }}'
-    virtualenv_command: -m venv
 
 - name: Create the gunicorn socket
   template:
