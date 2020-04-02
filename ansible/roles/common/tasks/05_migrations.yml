@@ -3,12 +3,12 @@
 ##
 - name: Make migrations
   shell:
-    cmd: '. {{ env_file }}; {{ python_bin }} manage.py makemigrations'
+    cmd: 'set -a; . {{ env_file }}; set +a; {{ python_bin }} manage.py makemigrations'
     chdir: '{{ app_api_dir }}'
 
 - name: Migrate database
   shell:
-    cmd: '. {{ env_file }}; {{ python_bin }} manage.py migrate'
+    cmd: 'set -a; . {{ env_file }}; set +a; {{ python_bin }} manage.py migrate'
     chdir: '{{ app_api_dir }}'
 
 - name: Build static files
@@ -18,5 +18,5 @@
 
 - name: Get all static files
   shell:
-    cmd: '. {{ env_file }}; {{ python_bin }} manage.py collectstatic'
+    cmd: 'set -a; . {{ env_file }}; set +a; {{ python_bin }} manage.py collectstatic'
     chdir: '{{ app_api_dir }}'
