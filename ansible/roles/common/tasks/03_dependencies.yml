@@ -6,9 +6,6 @@
     path: '{{ venv_root }}'
     state: directory
 
-- name: Create virtual enviroment
-  shell: 'python3 -m venv {{ venv_dir }}'
-
 - name: Install dependencies
   pip:
     requirements: '{{ app_api_dir }}/requirements.txt'
