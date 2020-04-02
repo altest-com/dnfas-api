@@ -17,5 +17,6 @@
     chdir: '{{ app_spa_dir }}'
 
 - name: Get all static files
-  django_manage:
+  shell:
     cmd: '. {{ env_file }}; {{ python_bin }} manage.py collectstatic'
+    chdir: '{{ app_api_dir }}'
