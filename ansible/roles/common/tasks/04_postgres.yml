@@ -9,7 +9,6 @@
       - libpq-dev
       - postgresql
       - postgresql-contrib
-      - python-psycopg2
 
 #- name: Run initdb command
 #  raw: postgresql-setup initdb
