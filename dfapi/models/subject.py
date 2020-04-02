@@ -1,11 +1,10 @@
 import logging
-from datetime import date
+from datetime import date, timedelta
 from datetime import datetime
 from os import path
 from typing import Tuple
 
 import numpy as np
-from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.db import models
 from django.db.models import QuerySet
@@ -106,7 +105,7 @@ class Subject(models.Model):
 
     @staticmethod
     def birthdate_from_age(age):
-        return datetime.now() - relativedelta(years=age)
+        return datetime.now() - timedelta(days=(age * 365.2425))
 
     # @cached_property
     # def camera(self):
