@@ -6,6 +6,12 @@
     path: '{{ venv_root }}'
     state: directory
 
+- name: Upgrade pip
+  pip:
+    name: pip
+    state: latest
+    virtualenv: '{{ venv_dir }}'
+
 - name: Install dependencies
   pip:
     requirements: '{{ app_api_dir }}/requirements.txt'
