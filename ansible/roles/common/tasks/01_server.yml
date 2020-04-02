@@ -7,6 +7,8 @@
     name:
     - python3-venv
     - python3-dev
+    - libsm6  # required for opencv
+    - libxext6 # required for opencv
   become: yes
 
 - name: Create app directory
