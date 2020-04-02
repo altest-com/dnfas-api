@@ -1,11 +1,6 @@
 ##
 # Set up all the dependencies in a virtualenv required by the Django app
 ##
-- name: Create a virtualenv directory
-  file:
-    path: '{{ venv_root }}'
-    state: directory
-
 - name: Upgrade pip
   pip:
     name: pip

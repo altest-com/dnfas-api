@@ -2,16 +2,14 @@
 # Run db migrations and get all static files
 ##
 - name: Make migrations
-  django_manage:
-    app_path: '{{ app_api_dir }}'
-    command: makemigrations
-    virtualenv: '{{ venv_dir }}'
+  shell:
+    cmd: '. {{ env_file }}; {{ python_bin }} manage.py makemigrations'
+    chdir: '{{ app_api_dir }}'
 
 - name: Migrate database
-  django_manage:
-    app_path: '{{ app_api_dir }}'
-    command: makemigrations
-    virtualenv: '{{ venv_dir }}'
+  shell:
+    cmd: '. {{ env_file }}; {{ python_bin }} manage.py migrate'
+    chdir: '{{ app_api_dir }}'
 
 - name: Build static files
   shell:
@@ -20,7 +18,4 @@
 
 - name: Get all static files
   django_manage:
-    app_path: '{{ app_api_dir }}'
-    command: collectstatic
-    virtualenv: '{{ venv_dir }}'
-  # become: yes
+    cmd: '. {{ env_file }}; {{ python_bin }} manage.py collectstatic'
