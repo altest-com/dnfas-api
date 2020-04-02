@@ -10,4 +10,3 @@
   pip:
     requirements: '{{ app_api_dir }}/requirements.txt'
     virtualenv: '{{ venv_dir }}'
-    virtualenv_command: python3 -m venv
