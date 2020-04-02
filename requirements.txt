@@ -15,5 +15,5 @@ django-cors-headers>=3.2.1
 Pillow>=6.1.0
 psycopg2>=2.8.4
 pynvml>=8.0.3
-fabric>=2.5.0
+gunicorn>=19.9.0
 
