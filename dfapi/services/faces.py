@@ -11,12 +11,10 @@ import cv2 as cv
 import numpy as np
 from django import db
 from django.conf import settings
-from django.db.models import QuerySet
 from dnfal.alignment import FaceAligner
 from dnfal.genderage import GenderAgePredictor
 from dnfal.settings import Settings
 from dnfal.vision import FacesVision
-from openpyxl import Workbook
 
 from .exceptions import ServiceError
 from ..models import (
