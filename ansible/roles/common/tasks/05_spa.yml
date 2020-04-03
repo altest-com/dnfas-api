@@ -16,6 +16,10 @@
   apt: name=nodejs
   become: yes
 
+- name: Install spa dependencies
+  npm:
+    path: '{{ app_spa_dir }}'
+
 - name: Build spa
   shell:
     cmd: npm run build:prod
