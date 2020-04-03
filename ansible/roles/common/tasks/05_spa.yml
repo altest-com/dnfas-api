@@ -1,16 +1,18 @@
 ##
 # Install node and build spa
 ##
-- name: Curl package dependency
-  apt: name=curl state=present
+- name: add apt key for nodesource
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
   become: yes
 
-- name: Enable the node repository
-  shell:
-    cmd: curl -sL https://deb.nodesource.com/setup_10.x | -E bash -
+- name: Add repo for nodesource
+  apt_repository:
+    repo: 'deb https://deb.nodesource.com/node_10.x {{ ansible_distribution_release }} main'
+    update_cache: yes
   become: yes
 
-- name: Install node
+- name: Install nodejs
   apt: name=nodejs
   become: yes
 
