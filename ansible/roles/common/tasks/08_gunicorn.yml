@@ -8,17 +8,17 @@
     dest: /etc/systemd/system/gunicorn.socket
   become: yes
 
+- name: Create the gunicorn service
+  template:
+    src: gunicorn.service
+    dest: /etc/systemd/system/gunicorn.service
+  become: yes
+
 - name: Start and enable socket
   service:
     name: gunicorn.socket
     enabled: yes
     state: started
-  become: yes
-
-- name: Create the gunicorn service
-  template:
-    src: gunicorn.service
-    dest: /etc/systemd/system/gunicorn.service
   become: yes
 
 - name: Start and enable gunicorn
