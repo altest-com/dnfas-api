@@ -1,5 +1,5 @@
 ##
-# Update the DNF package cache and install packages as a root user
+# Update the APT package cache and install packages as a root user
 ##
 - name: Install required packages
   apt:

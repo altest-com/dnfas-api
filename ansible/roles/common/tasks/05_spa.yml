@@ -1,0 +1,20 @@
+##
+# Install node and build spa
+##
+- name: Curl package dependency
+  apt: name=curl state=present
+  become: yes
+
+- name: Enable the node repository
+  shell:
+    cmd: curl -sL https://deb.nodesource.com/setup_10.x | -E bash -
+  become: yes
+
+- name: Install node
+  apt: name=nodejs
+  become: yes
+
+- name: Build spa
+  shell:
+    cmd: npm run build:prod
+    chdir: '{{ app_spa_dir }}'
