@@ -1,7 +1,7 @@
 ##
 # Configure nginx web server
 ##
-- name: Set up nginx config
+- name: Install/upgrade nginx
   apt: name=nginx state=latest
   become: yes
 
@@ -16,6 +16,7 @@
     src: /etc/nginx/sites-available/{{ app_name }}
     dest: /etc/nginx/sites-enabled/{{ app_name }}
     state: link
+  become: yes
 
 - name: Start and enable nginx
   service:
