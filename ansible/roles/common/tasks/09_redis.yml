@@ -20,7 +20,7 @@
 
 - name: Start and enable redis service
   service:
-    name: redis.socket
+    name: redis
     enabled: yes
     state: started
   become: yes
