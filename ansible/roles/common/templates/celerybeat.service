@@ -12,7 +12,7 @@ EnvironmentFile={{ env_file }}
 WorkingDirectory={{ app_api_dir }}
 ExecStart=/bin/sh -c '{{ celery_bin }} beat  \
   -A {{ app_name }} --pidfile={{ celerybeat_pid_file }} \
-  --logfile={{ celerybeat_log_file }} --loglevel={{ celerybeat_log_level }}'
+  --logfile={{ celerybeat_log_file }} --loglevel={{ celery_log_level }}'
 
 [Install]
 WantedBy=multi-user.target
