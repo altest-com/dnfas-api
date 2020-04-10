@@ -33,6 +33,11 @@ ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
 
+_hosts = os.environ.get('DNFAS_ALLOWED_HOSTS', None)
+
+if _hosts is not None:
+    ALLOWED_HOSTS.extend(_hosts.split(','))
+
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
